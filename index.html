@@ -23,86 +23,128 @@
 				<a site="default" href="javascript:alert('正在加载请稍后')">其他页面</a>
 			</div>
 			<div id="app">
-				<div class="iframe-controller" hidden>
-					<div class="iframe-controller-bg"></div>
-					<div class="iframe-controller-exit">
-						<svg class="absolute-center" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<title>退出iframe页面控制中心</title>
-							<path
-								d="M24 44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C12.9543 4 4 12.9543 4 24C4 35.0457 12.9543 44 24 44Z M29.6567 18.3432L18.343 29.6569 M18.3433 18.3432L29.657 29.6569"
-								style="stroke:currentColor" fill="none" stroke-width="4" stroke-linejoin="round" />
-						</svg>
-					</div>
-					<div class="iframe-controller-list absolute-center">
-						<div class="list-item" fn-data="refresh">
-							<div class="item-container absolute-center">
-								<div class="item-logo">
-									<svg width="24" height="24" viewBox="0 0 48 48" fill="none"
-										xmlns="http://www.w3.org/2000/svg">
-										<title>仅刷新iframe页面（iframe页面URL参数不变）</title>
-										<path
-											d="M42 8V24 M6 24L6 40 M42 24C42 14.0589 33.9411 6 24 6C18.9145 6 14.3216 8.10896 11.0481 11.5M6 24C6 33.9411 14.0589 42 24 42C28.8556 42 33.2622 40.0774 36.5 36.9519"
-											style="stroke:currentColor" stroke-width="4" stroke-linecap="round"
-											stroke-linejoin="round" />
-									</svg>
-								</div>
-								<div class="item-title">刷新</div>
-							</div>
-						</div>
-						<div class="list-item" fn-data="new">
-							<div class="item-container absolute-center">
-								<div class="item-logo">
-									<svg width="24" height="24" viewBox="0 0 48 48" fill="none"
-										xmlns="http://www.w3.org/2000/svg">
-										<title>新建一个全新的iframe页面（iframe页面URL参数清空）</title>
-										<path
-											d="M19 10V7C19 5.89543 19.8954 5 21 5H41C42.1046 5 43 5.89543 43 7V29C43 30.1046 42.1046 31 41 31H37 M17 25V35 M12 30H22"
-											style="stroke:currentColor" stroke-width="4" stroke-linecap="round"
-											stroke-linejoin="round" />
-										<rect x="5" y="18" width="24" height="24" rx="2" fill="none"
-											style="stroke:currentColor" stroke-width="4" stroke-linecap="round"
-											stroke-linejoin="round" />
-									</svg>
-								</div>
-								<div class="item-title">新建</div>
-							</div>
-						</div>
-						<div class="list-item" fn-data="copy">
-							<div class="item-container absolute-center">
-								<div class="item-logo">
-									<svg width="24" height="24" viewBox="0 0 48 48" fill="none"
-										xmlns="http://www.w3.org/2000/svg">
-										<title>复制当前iframe页面URL</title>
-										<path
-											d="M12 9.92704V7C12 5.34315 13.3431 4 15 4H41C42.6569 4 44 5.34315 44 7V33C44 34.6569 42.6569 36 41 36H38.0174 M18.4394 23.1101L23.7319 17.6006C25.1835 16.1489 27.5691 16.1809 29.0602 17.672C30.5513 19.1631 30.5833 21.5487 29.1316 23.0003L27.2215 25.0231 M13.4661 28.7472C12.9558 29.2575 11.9006 30.2765 11.9006 30.2765C10.4489 31.7281 10.4095 34.3155 11.9006 35.8066C13.3917 37.2977 15.7772 37.3296 17.2289 35.878L22.3931 31.1896 M18.6626 28.3284C17.97 27.6358 17.5922 26.7502 17.5317 25.8548C17.4619 24.8226 17.8138 23.7774 18.5912 23.0001 M22.3213 25.8613C23.8124 27.3524 23.8444 29.738 22.3927 31.1896"
-											style="stroke:currentColor" stroke-width="4" />
-										<rect x="4" y="10" width="34" height="34" rx="3" fill="none"
-											style="stroke:currentColor" stroke-width="4" stroke-linejoin="round" />
-									</svg>
-								</div>
-								<div class="item-title">链接</div>
-							</div>
-						</div>
-						<div class="list-item" fn-data="open">
-							<div class="item-container absolute-center">
-								<div class="item-logo">
-									<svg width="24" height="24" viewBox="0 0 48 48" fill="none"
-										xmlns="http://www.w3.org/2000/svg">
-										<title>打开当前iframe页面</title>
-										<path
-											d="M28 6H42V20 M42 29.4737V39C42 40.6569 40.6569 42 39 42H9C7.34315 42 6 40.6569 6 39V9C6 7.34315 7.34315 6 9 6L18 6 M25.7998 22.1999L41.0998 6.8999"
-											style="stroke:currentColor" stroke-width="4" stroke-linecap="round"
-											stroke-linejoin="round" />
-									</svg>
-								</div>
-								<div class="item-title">打开</div>
-							</div>
-						</div>
-					</div>
-				</div>
 				<div class="state-msg">正在加载...</div>
 				<iframe name="app-if" hidden></iframe>
 			</div>
+			<div id="controller" class="iframe-controller-bg" hidden>
+				<div class="iframe-controller-exit">
+					<svg class="absolute-center" width="24" height="24" viewBox="0 0 48 48" fill="none"
+						xmlns="http://www.w3.org/2000/svg">
+						<title>退出iframe页面控制中心</title>
+						<path
+							d="M24 44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C12.9543 4 4 12.9543 4 24C4 35.0457 12.9543 44 24 44Z M29.6567 18.3432L18.343 29.6569 M18.3433 18.3432L29.657 29.6569"
+							style="stroke:currentColor" fill="none" stroke-width="4" stroke-linejoin="round" />
+					</svg>
+				</div>
+				<div class="iframe-controller-list absolute-center">
+					<div class="list-item" data-fn="refresh" title="刷新当前iframe页面">
+						<div class="item-container absolute-center">
+							<div class="item-logo">
+								<svg width="24" height="24" viewBox="0 0 48 48" fill="none"
+									xmlns="http://www.w3.org/2000/svg">
+									<path
+										d="M42 8V24 M6 24L6 40 M42 24C42 14.0589 33.9411 6 24 6C18.9145 6 14.3216 8.10896 11.0481 11.5M6 24C6 33.9411 14.0589 42 24 42C28.8556 42 33.2622 40.0774 36.5 36.9519"
+										style="stroke:currentColor" stroke-width="4" stroke-linecap="round"
+										stroke-linejoin="round" />
+								</svg>
+							</div>
+							<div class="item-title">刷新</div>
+						</div>
+					</div>
+					<div class="list-item" hide data-fn="new" title="新建当前iframe页面">
+						<div class="item-container absolute-center">
+							<div class="item-logo">
+								<svg width="24" height="24" viewBox="0 0 48 48" fill="none"
+									xmlns="http://www.w3.org/2000/svg">
+									<path
+										d="M19 10V7C19 5.89543 19.8954 5 21 5H41C42.1046 5 43 5.89543 43 7V29C43 30.1046 42.1046 31 41 31H37 M17 25V35 M12 30H22"
+										style="stroke:currentColor" stroke-width="4" stroke-linecap="round"
+										stroke-linejoin="round" />
+									<rect x="5" y="18" width="24" height="24" rx="2" fill="none"
+										style="stroke:currentColor" stroke-width="4" stroke-linecap="round"
+										stroke-linejoin="round" />
+								</svg>
+							</div>
+							<div class="item-title">新建</div>
+						</div>
+					</div>
+					<div class="list-item" data-fn="copy" title="复制当前iframe页面URL">
+						<div class="item-container absolute-center">
+							<div class="item-logo">
+								<svg width="24" height="24" viewBox="0 0 48 48" fill="none"
+									xmlns="http://www.w3.org/2000/svg">
+									<path
+										d="M12 9.92704V7C12 5.34315 13.3431 4 15 4H41C42.6569 4 44 5.34315 44 7V33C44 34.6569 42.6569 36 41 36H38.0174 M18.4394 23.1101L23.7319 17.6006C25.1835 16.1489 27.5691 16.1809 29.0602 17.672C30.5513 19.1631 30.5833 21.5487 29.1316 23.0003L27.2215 25.0231 M13.4661 28.7472C12.9558 29.2575 11.9006 30.2765 11.9006 30.2765C10.4489 31.7281 10.4095 34.3155 11.9006 35.8066C13.3917 37.2977 15.7772 37.3296 17.2289 35.878L22.3931 31.1896 M18.6626 28.3284C17.97 27.6358 17.5922 26.7502 17.5317 25.8548C17.4619 24.8226 17.8138 23.7774 18.5912 23.0001 M22.3213 25.8613C23.8124 27.3524 23.8444 29.738 22.3927 31.1896"
+										style="stroke:currentColor" stroke-width="4" />
+									<rect x="4" y="10" width="34" height="34" rx="3" fill="none"
+										style="stroke:currentColor" stroke-width="4" stroke-linejoin="round" />
+								</svg>
+							</div>
+							<div class="item-title">链接</div>
+						</div>
+					</div>
+					<div class="list-item" data-fn="open" title="打开当前iframe页面">
+						<div class="item-container absolute-center">
+							<div class="item-logo">
+								<svg width="24" height="24" viewBox="0 0 48 48" fill="none"
+									xmlns="http://www.w3.org/2000/svg">
+									<path
+										d="M28 6H42V20 M42 29.4737V39C42 40.6569 40.6569 42 39 42H9C7.34315 42 6 40.6569 6 39V9C6 7.34315 7.34315 6 9 6L18 6 M25.7998 22.1999L41.0998 6.8999"
+										style="stroke:currentColor" stroke-width="4" stroke-linecap="round"
+										stroke-linejoin="round" />
+								</svg>
+							</div>
+							<div class="item-title">打开</div>
+						</div>
+					</div>
+					<div class="list-item" data-fn="auto" title="自动设置当前iframe页面大小">
+						<div class="item-container absolute-center">
+							<div class="item-logo">
+								<svg width="24" height="24" viewBox="0 0 48 48" fill="none"
+									xmlns="http://www.w3.org/2000/svg">
+									<path
+										d="M21 38C30.3888 38 38 30.3888 38 21C38 11.6112 30.3888 4 21 4C11.6112 4 4 11.6112 4 21C4 30.3888 11.6112 38 21 38Z M33.2216 33.2217L41.7069 41.707 M21 13L15 29 M17 25L25 25 M21 13L27 29"
+										style="stroke:currentColor" stroke-width="4" stroke-linecap="round"
+										stroke-linejoin="round" />
+								</svg>
+							</div>
+							<div class="item-title">自动</div>
+						</div>
+					</div>
+					<div class="list-item" data-fn="larger" title="强制放大当前iframe页面">
+						<div class="item-container absolute-center">
+							<div class="item-logo">
+								<svg width="24" height="24" viewBox="0 0 48 48" fill="none"
+									xmlns="http://www.w3.org/2000/svg">
+									<path
+										d="M21 38C30.3888 38 38 30.3888 38 21C38 11.6112 30.3888 4 21 4C11.6112 4 4 11.6112 4 21C4 30.3888 11.6112 38 21 38Z M21 15L21 27 M15.0156 21.0156L27 21 M33.2216 33.2217L41.7069 41.707"
+										style="stroke:currentColor" stroke-width="4" stroke-linecap="round"
+										stroke-linejoin="round" />
+								</svg>
+							</div>
+							<div class="item-title">放大</div>
+						</div>
+					</div>
+					<div class="list-item" data-fn="smaller" title="强制缩小当前iframe页面">
+						<div class="item-container absolute-center">
+							<div class="item-logo">
+								<svg width="24" height="24" viewBox="0 0 48 48" fill="none"
+									xmlns="http://www.w3.org/2000/svg">
+									<path
+										d="M21 38C30.3888 38 38 30.3888 38 21C38 11.6112 30.3888 4 21 4C11.6112 4 4 11.6112 4 21C4 30.3888 11.6112 38 21 38Z M15 21L27 21 M33.2216 33.2217L41.7069 41.707"
+										style="stroke:currentColor" stroke-width="4" stroke-linecap="round"
+										stroke-linejoin="round" />
+								</svg>
+							</div>
+							<div class="item-title">缩小</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="touch">
+				<div class="touch_inner"></div>
+			</div>
 		</div>
+		<div id="eruda"></div>
 	</body>
 </html>

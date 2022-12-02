@@ -31,79 +31,160 @@ var host = location.hostname.search("rth.app") !== -1 ? "gem" : "github",
 			md: `M4 39H44V24V9H24H4V24V39Z M4 9L24 24L44 9 M24 9H4V24 M44 24V9H24`,
 			default: `M24 44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C12.9543 4 4 12.9543 4 24C4 35.0457 12.9543 44 24 44Z M15 33L19.5 19.5L33 15L28.5 28.5L15 33Z M24 26C25.1046 26 26 25.1046 26 24C26 22.8954 25.1046 22 24 22C22.8954 22 22 22.8954 22 24C22 25.1046 22.8954 26 24 26Z`
 		}
-	};
-function copy(data,alertFlag=true){
-	data=$(`<textarea style="height:0;width:0"></textarea>`).val(typeof data==="string"?data:String(data));
-	$("body").append(data)
-	data.select();
-	document.execCommand("copy");
-	if(alertFlag){
-		alert("已复制到剪贴板");
-	}
-	console.log("以下已复制到剪贴板:\n"+data.val());
-	data.remove();
-}
-function matchLogo(query) {
-	if (query.matches) { // 媒体查询
-		$(".nav a").each((i, e) => {
-			e = $(e);
-			e.html(map.logo.svg.replace("$title", e.text()).replace("$path", map.logo[e.attr("site")]))
-		})
-	} else {
-		$(".nav a").each((i, e) => {
-			e = $(e);
-			e.text(e.text());
-		})
-	}
-}
-
-function matchSite(url) {
-	url = new URL(url)
-	for (let i in map) {
-		for (let j in map[i]) {
-			let t = new URL(map[i][j]);
-			if (url.hostname === t.hostname && url.pathname === t.pathname) {
-				return j
+	},
+	mediaQueryJSON = {
+		fn: {
+			init: function(mQuery, fn) {
+				fn(mQuery);
+				mQuery.onchange = fn;
+			},
+			off: function(mQuery) {
+				mQuery.onchange = null;
+			},
+			on: function(mQuery, fn) {
+				mQuery.onchange = fn;
+			}
+		},
+		width: window.matchMedia("(max-width: 950px)"),
+		theme: window.matchMedia("(prefers-color-scheme: dark)")
+	},
+	match = {
+		logo: function(query) {
+			if (query.matches) { // 媒体查询
+				$(".nav a").each((i, e) => {
+					e = $(e);
+					e.html(map.logo.svg.replace("$title", e.text()).replace("$path", map.logo[e.attr(
+						"site")]))
+				})
+			} else {
+				$(".nav a").each((i, e) => {
+					e = $(e);
+					e.text(e.text());
+				})
+			}
+		},
+		theme: function(query) {
+			query.matches ? $("html").attr("dark", "true") : $("html").removeAttr("dark")
+		},
+		site: function(url) {
+			url = new URL(url)
+			for (let i in map) {
+				for (let j in map[i]) {
+					let t = new URL(map[i][j]);
+					if (url.hostname === t.hostname && url.pathname === t.pathname) {
+						return j
+					}
+				}
+			}
+			return "default";
+		}
+	},
+	copy = function(data, alertFlag = true) {
+		data = $(`<textarea style="height:0;width:0"></textarea>`).val(typeof data === "string" ? data : String(data));
+		$("body").append(data)
+		data.select();
+		document.execCommand("copy");
+		if (alertFlag) {
+			alert("已复制到剪贴板");
+		}
+		console.log("以下已复制到剪贴板:\n" + data.val());
+		data.remove();
+	},
+	matchLogo = function(query) {
+		if (query.matches) { // 媒体查询
+			$(".nav a").each((i, e) => {
+				e = $(e);
+				e.html(map.logo.svg.replace("$title", e.text()).replace("$path", map.logo[e.attr("site")]))
+			})
+		} else {
+			$(".nav a").each((i, e) => {
+				e = $(e);
+				e.text(e.text());
+			})
+		}
+	},
+	matchSite = function(url) {
+		url = new URL(url)
+		for (let i in map) {
+			for (let j in map[i]) {
+				let t = new URL(map[i][j]);
+				if (url.hostname === t.hostname && url.pathname === t.pathname) {
+					return j
+				}
 			}
 		}
-	}
-	return "default";
-}
-
-function show(e) {
-	e = e instanceof jQuery ? e : $(e);
-	e.removeAttr("hidden");
-	return e;
-}
-
-function hide(e) {
-	e = e instanceof jQuery ? e : $(e);
-	e.attr("hidden", "");
-	return e;
-}
-
-function selectNav(e) {
-	e = e instanceof jQuery ? e : $(e);
-	console.log("当前页 : " + e.text())
-	e.attr("select", "")
-	e.siblings().removeAttr("select");
-}
-
-function iframeLoad(url, extraParams) {
-	url = url instanceof URL ? url : new URL(url);
-	if (extraParams) {
+		return "default";
+	},
+	matchTheme = function(query) {
+		query.matches ? $("html").attr("dark", "true") : $("html").removeAttr("dark")
+	},
+	show = function(e) {
+		e = e instanceof jQuery ? e : $(e);
+		e.removeAttr("hidden");
+		return e;
+	},
+	hide = function(e) {
+		e = e instanceof jQuery ? e : $(e);
+		e.attr("hidden", "");
+		return e;
+	},
+	selectNav = function(e) {
+		e = e instanceof jQuery ? e : $(e);
+		console.log("当前页 : " + e.text())
+		e.attr("select", "")
+		e.siblings().removeAttr("select");
+	},
+	iframeLoad = function(url, extraParams, extraAttrs) {
+		url = url instanceof URL ? url : new URL(url);
 		try {
-			for (let i in extraParams) {
-				url.searchParams.set(i, extraParams[i]);
+			if (extraParams) {
+				for (let i in extraParams) {
+					url.searchParams.set(i, extraParams[i]);
+				}
+			}
+			if (extraAttrs) {
+				for (let i in extraAttrs.add) {
+					$("#app iframe[name=app-if]").attr(i, extraAttrs.add[i])
+				}
+				for (let i in extraAttrs.remove) {
+					$("#app iframe[name=app-if]").removeAttr(extraAttrs.remove[i])
+				}
 			}
 		} catch (e) {
 			console.log("iframeLoad 参数错误", e);
 		}
+		show("#app .state-msg");
+		hide("#app iframe[name=app-if]");
+		$("#app iframe[name=app-if]").attr("src", "").attr("src", url.href);
+	},
+	iframeScale = function(rate = 100, enforce = false) {
+		rate = parseInt(rate);
+		rate = rate > 0 ? rate : 0;
+		if (rate < 50 && !enforce) {
+			rate = 50;
+			alert("已达最小缩放值50%");
+		}
+		if (parseInt($("#app iframe[name=app-if]").css("--size")) === rate) {
+			return false
+		}
+		$("#app iframe[name=app-if]").css("--size", rate === 100 ? "" : `${rate}%`);
+		if (rate < 100) {
+			$("#app iframe[name=app-if]").addClass("absolute-center");
+		} else {
+			$("#app iframe[name=app-if]").removeClass("absolute-center");
+		}
+		let minus = $("#app iframe[name=app-if]").width() - $("#app").width();
+		if (minus >= 2) {
+			$("#app").scrollLeft(minus / 2);
+		}
+		minus = $("#app iframe[name=app-if]").height() - $("#app").height();
+		if (minus >= 2) {
+			$("#app").scrollTop(minus / 2);
+		}
 	}
-	show("#app .state-msg");
-	hide("#app iframe[name=app-if]");
-	$("#app iframe[name=app-if]").attr("src", "").attr("src", url.href);
-}
+
+
+mediaQueryJSON.fn.init(mediaQueryJSON.theme, match.theme);
 $("body").ready(() => {
 	//先加载iframe，其他稍后再说
 	$("#app iframe[name=app-if]")[0].onload = function() {
@@ -112,32 +193,44 @@ $("body").ready(() => {
 	}
 	iframeLoad(map[host][$(".nav a[select]").attr("site")], {
 		"jump": "parent"
+	}, $(".nav a[select]").attr("site") !== "qr" ? {
+		remove: ["allow"]
+	} : {
+		add: {
+			"allow": "microphone;camera"
+		}
 	})
 	//导航栏
 	$(".nav a").each((i, e) => {
 		e.href = "javascript:void(0);";
 		e.onclick = function() {
-			let url = "";
 			if ($(e).attr("select") === undefined) {
-				url = new URL(map[host][$(this).attr("site")]);
-				url.searchParams.set("jump", "parent");
 				selectNav(this);
-				iframeLoad(url);
+				iframeLoad(map[host][$(".nav a[select]").attr("site")], {
+					"jump": "parent"
+				}, $(".nav a[select]").attr("site") !== "qr" ? {
+					remove: ["allow"]
+				} : {
+					add: {
+						"allow": "microphone;camera"
+					}
+				})
+			} else if ($(`#controller`).attr("hidden") === undefined) {
+				hide(`#controller`).removeAttr("url-data");
 			} else {
-				if($(`#app .iframe-controller`).attr("hidden")===undefined){
-					hide(`#app .iframe-controller`).removeAttr("url-data");
-				}else{
-					url = $("#app iframe[name=app-if]").attr("src");
-					show(`#app .iframe-controller`).attr("url-data", url);
-				}
+				$("#controller").width($("#app")[0].offsetWidth - 2);
+				$("#controller").height($("#app")[0].offsetHeight - 2);
+				show(`#controller`).attr("url-data", $("#app iframe[name=app-if]")
+					.attr("src"));
 			}
 		}
 	})
-	$("#app .iframe-controller .iframe-controller-exit").click((e) => {
-		hide(`#app .iframe-controller`).removeAttr("url-data");
+	$("#controller .iframe-controller-exit").click((e) => {
+		hide(`#controller`).removeAttr("url-data");
 	})
-	$("#app .iframe-controller .iframe-controller-list .list-item").click((e) => {
-		switch ($(e.currentTarget).attr("fn-data")) {
+	$("#controller .iframe-controller-list .list-item").click((e) => {
+		let needHide = true;
+		switch ($(e.currentTarget).data("fn")) {
 			case "refresh":
 				iframeLoad($("#app iframe[name=app-if]").attr("src"));
 				break;
@@ -150,19 +243,85 @@ $("body").ready(() => {
 				copy($("#app iframe[name=app-if]").attr("src"));
 				break;
 			case "open":
-				open($("#app iframe[name=app-if]").attr("src"),"_self");
+				open($("#app iframe[name=app-if]").attr("src"), "_self");
+				break;
+			case "smaller":
+				needHide = false;
+				iframeScale(parseInt($("#app iframe[name=app-if]").css("--size")) - 10);
+				break;
+			case "larger":
+				needHide = false;
+				iframeScale(parseInt($("#app iframe[name=app-if]").css("--size")) + 10);
+				break;
+			case "auto":
+				needHide = false;
+				iframeScale(100);
+				break;
+			default:
+				console.log("iframe-controller error");
 				break;
 		}
-		hide("#app .iframe-controller")
+		needHide && hide("#controller");
 	})
 	//iframe传递信息
 	window.addEventListener('message', (e) => {
 		if (e.data.url) {
 			$("#app iframe[name=app-if]").attr("src", e.data.url);
-			selectNav($(`.nav a[site=${matchSite(e.data.url)}]`))
+			selectNav($(`.nav a[site=${match.site(e.data.url)}]`))
 		}
 	}, false);
-	var widthQuery = window.matchMedia("(max-width: 950px)")
-	matchLogo(widthQuery) // 执行时调用的监听函数
-	widthQuery.addListener(matchLogo) // 状态改变时添加监听器
+	// 响应式布局nav controller
+	mediaQueryJSON.fn.init(mediaQueryJSON.width, match.logo);
+	$(window).resize(() => {
+		$("#controller").width($("#app")[0].offsetWidth - 2);
+		$("#controller").height($("#app")[0].offsetHeight - 2);
+	});
+	// eruda配置
+	var erudaSrc = '';
+	if (/eruda=true/.test(window.location) || localStorage.getItem('active-eruda') === 'true') {
+		$("#eruda").append(`<script async eruda src="js/eruda.js"></script><div eruda></div>`)
+		$("#eruda script[eruda]").ready(() => {
+			eruda.init({
+				container: $("#eruda div[eruda]")[0],
+				useShadowDom: true,
+				autoScale: true
+			})
+		})
+	}
+})
+$("#touch").ready(() => {
+	var touchTimer = -1,
+		active = true;
+	function centerScroll() {
+		active = false;
+		let l = $("#touch .touch_inner").width() - $("#touch").width();
+		$("#touch").scrollLeft(l / 2);
+		setTimeout(() => { //延时防抖，防止scroll初始化时候触发scroll事件
+			active = true;
+		}, 500)
+	}
+	centerScroll();
+	$("#touch").scroll((e) => {
+		if (!active) {
+			return null
+		}
+		let pos = $("#touch").scrollLeft();
+		touchTimer !== -1 && clearTimeout(touchTimer);
+		touchTimer = setTimeout(() => {
+			let l = $("#touch .touch_inner").width() - $("#touch").width();
+			let next=null;
+			if (pos > l/2) {
+				next=($(".nav a[select]").index()+1)%8;
+			} else if (pos < l/2) {
+				next=($(".nav a[select]").index()+7)%8;
+			}
+			if(next!==null){
+				$(".nav a")[next].click();
+			}
+			centerScroll();
+		}, 300)
+	})
+	$("#touch").dblclick(()=>{
+		centerScroll();
+	})
 })

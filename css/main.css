@@ -5,7 +5,26 @@
 	--color-bg: #e7e7ec;
 	--color-bg-hover: #f1f1f5;
 	--color-bg-hover-2: #c3c3c6;
+	--color-bg-hover-3: #c3c3c67f;
 	--color-text: #2f3035;
+}
+
+:root[dark] {
+	--color-danger: #fe3824;
+	--color-warning: #ffe601;
+	--color-bg: #2f3035;
+	--color-bg-hover: #2a2b30;
+	--color-bg-hover-2: #58585f;
+	--color-text: #e7e7ec;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+}
+
+[hide] {
+	display: none;
 }
 
 /* body */
@@ -16,9 +35,10 @@ body {
 }
 
 /* 整体框架 */
+
 #main {
 	width: 75vw;
-	min-width: 300px;
+	min-width: 360px;
 	height: 90%;
 	position: absolute;
 	top: 0;
@@ -26,7 +46,6 @@ body {
 	right: 0;
 	bottom: 0;
 	margin: auto;
-	padding: 10px;
 }
 
 /* 导航栏 */
@@ -43,6 +62,8 @@ body {
 }
 
 .nav a {
+	width: calc(100% - 2px);
+	height: calc(100% - 2px);
 	text-decoration: none;
 	border: 1px solid var(--color-text);
 	color: var(--color-text);
@@ -63,46 +84,55 @@ body {
 /* 页面iframe */
 #app {
 	width: calc(100% - 2px);
-	height: calc(100% - 6rem - 4px);
+	height: calc(100% - 6rem - 10px);
 	border: 1px solid var(--color-text);
 	position: relative;
+	overflow: auto;
+}
+
+#app::-webkit-scrollbar {
+	/* display: none; */
 }
 
 #app iframe {
-	width: 100%;
-	height: 100%;
+	--size: 100%;
+	width: var(--size);
+	height: var(--size);
 	border: 0;
-}
-
-#app .iframe-controller {
-	width: 100%;
-	height: 100%;
 	position: absolute;
+	top: 0;
+	left: 0;
 }
 
-#app .absolute-center {
+#main .absolute-center {
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
 }
 
-#app .iframe-controller .iframe-controller-bg {
+#controller {
+	width: calc(100% - 2px);
+	height: calc(100% - 6rem - 10px);
 	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background-color: var(--color-bg-hover-2);
-	opacity: 0.7;
+	left: 1px;
+	bottom: 1px;
+	z-index: 9999;
 }
-#app .iframe-controller .iframe-controller-exit{
+
+#controller.iframe-controller-bg {
+	background-color: var(--color-bg-hover-3);
+	backdrop-filter: blur(6px);
+}
+
+#controller .iframe-controller-exit {
 	position: relative;
 	width: 100%;
 	height: 2rem;
 	cursor: pointer;
 }
-#app .iframe-controller .iframe-controller-list {
+
+#controller .iframe-controller-list {
 	width: 50%;
 	display: flex;
 	flex-flow: row wrap;
@@ -111,7 +141,7 @@ body {
 	text-align: center;
 }
 
-#app .iframe-controller .list-item {
+#controller .list-item {
 	position: relative;
 	width: 4.5rem;
 	height: 4.5rem;
@@ -120,7 +150,27 @@ body {
 	border-radius: 50%;
 	cursor: pointer;
 }
-#app .iframe-controller .list-item:hover{
+
+#controller .list-item:hover {
 	background-color: var(--color-bg);
 	font-weight: bold;
+}
+#touch{
+	width: calc(100% - 2px);
+	height: 8px;
+	margin-top: 1rem;
+	border: 1px solid var(--color-text);
+	border-radius: 5px;
+	overflow: scroll hidden;
+}
+#touch::-webkit-scrollbar-thumb{
+	background-color: transparent;
+	width: 90%;
+}
+#touch::-webkit-scrollbar{
+	height: 10px;
+}
+#touch .touch_inner{
+	width: 150%;
+	height: 1px;
 }
