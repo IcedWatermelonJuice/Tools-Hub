@@ -8,6 +8,8 @@
 		<link rel="stylesheet" type="text/css" href="css/main.css" />
 		<link rel="icon" type="image/x-icon" href="favicon.ico" />
 		<script src="js/jquery.js"></script>
+		<script src="js/jQuery-Extensions-touchJS.js"></script>
+		<script src="js/js-storeData.js"></script>
 		<script src="js/main.js"></script>
 	</head>
 	<body>
@@ -20,13 +22,13 @@
 				<a site="dp" href="javascript:alert('正在加载请稍后')">DNS解析</a>
 				<a site="ua" href="javascript:alert('正在加载请稍后')">UA解析</a>
 				<a site="md" href="javascript:alert('正在加载请稍后')">信息投递</a>
-				<a site="default" href="javascript:alert('正在加载请稍后')">其他页面</a>
+				<a site="default" href="javascript:alert('正在加载请稍后')">Github</a>
 			</div>
-			<div id="app">
+			<div id="app" class="app-common">
 				<div class="state-msg">正在加载...</div>
 				<iframe name="app-if" hidden></iframe>
 			</div>
-			<div id="controller" class="iframe-controller-bg" hidden>
+			<div id="controller" class="iframe-controller-bg app-common" hidden>
 				<div class="iframe-controller-exit">
 					<svg class="absolute-center" width="24" height="24" viewBox="0 0 48 48" fill="none"
 						xmlns="http://www.w3.org/2000/svg">
@@ -51,7 +53,7 @@
 							<div class="item-title">刷新</div>
 						</div>
 					</div>
-					<div class="list-item" hide data-fn="new" title="新建当前iframe页面">
+					<div class="list-item" hidden="" data-fn="new" title="新建当前iframe页面">
 						<div class="item-container absolute-center">
 							<div class="item-logo">
 								<svg width="24" height="24" viewBox="0 0 48 48" fill="none"
@@ -141,9 +143,7 @@
 					</div>
 				</div>
 			</div>
-			<div id="touch">
-				<div class="touch_inner"></div>
-			</div>
+			<div id="touch"></div>
 		</div>
 		<div id="eruda"></div>
 	</body>

@@ -8,7 +8,7 @@ var host = location.hostname.search("rth.app") !== -1 ? "gem" : "github",
 			dp: "https://icedwatermelonjuice.github.io/DND-Parse",
 			ua: "https://icedwatermelonjuice.github.io/UA-test",
 			md: "https://icedwatermelonjuice.github.io/Message-Drop",
-			default: "https://github.com/IcedWatermelonJuice"
+			default: `${location.protocol}//${location.host+location.pathname.replace("index.html","")}md/README.html`
 		},
 		gem: {
 			hp: "https://gem-hp.rth.app",
@@ -18,7 +18,7 @@ var host = location.hostname.search("rth.app") !== -1 ? "gem" : "github",
 			dp: "https://gem-dp.rth.app",
 			ua: "https://gem-ua.rth.app",
 			md: "https://gem-md.rth.app",
-			default: "https://github.com/IcedWatermelonJuice"
+			default: `${location.protocol}//${location.host+location.pathname.replace("index.html","")}md/README.html`
 		},
 		logo: {
 			svg: `<svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><title>$title</title><path d="$path" fill="none" style="stroke:currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
@@ -29,7 +29,7 @@ var host = location.hostname.search("rth.app") !== -1 ? "gem" : "github",
 			dp: `M44 4H4V20H44V4Z M44 28H4V44H44V28Z M13 10H11C10.4477 10 10 10.4477 10 11V13C10 13.5523 10.4477 14 11 14H13C13.5523 14 14 13.5523 14 13V11C14 10.4477 13.5523 10 13 10Z M13 34H11C10.4477 34 10 34.4477 10 35V37C10 37.5523 10.4477 38 11 38H13C13.5523 38 14 37.5523 14 37V35C14 34.4477 13.5523 34 13 34Z M21 10H19C18.4477 10 18 10.4477 18 11V13C18 13.5523 18.4477 14 19 14H21C21.5523 14 22 13.5523 22 13V11C22 10.4477 21.5523 10 21 10Z M21 34H19C18.4477 34 18 34.4477 18 35V37C18 37.5523 18.4477 38 19 38H21C21.5523 38 22 37.5523 22 37V35C22 34.4477 21.5523 34 21 34Z`,
 			ua: `M8 6a2 2 0 0 1 2 -2h28a2 2 0 0 1 2 2v36a2 2 0 0 1 -2 2h-28a2 2 0 0 1 -2 -2z M24 19C26.2091 19 28 17.2091 28 15C28 12.7909 26.2091 11 24 11C21.7909 11 20 12.7909 20 15C20 17.2091 21.7909 19 24 19Z M30 25C30 21.6863 27.3137 19 24 19C20.6863 19 18 21.6863 18 25 M18 31H30 M18 37H25`,
 			md: `M4 39H44V24V9H24H4V24V39Z M4 9L24 24L44 9 M24 9H4V24 M44 24V9H24`,
-			default: `M24 44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C12.9543 4 4 12.9543 4 24C4 35.0457 12.9543 44 24 44Z M15 33L19.5 19.5L33 15L28.5 28.5L15 33Z M24 26C25.1046 26 26 25.1046 26 24C26 22.8954 25.1046 22 24 22C22.8954 22 22 22.8954 22 24C22 25.1046 22.8954 26 24 26Z`
+			default: `M5 7H16C20.4183 7 24 10.5817 24 15V42C24 38.6863 21.3137 36 18 36H5V7Z M43 7H32C27.5817 7 24 10.5817 24 15V42C24 38.6863 26.6863 36 30 36H43V7Z`
 		}
 	},
 	mediaQueryJSON = {
@@ -79,6 +79,7 @@ var host = location.hostname.search("rth.app") !== -1 ? "gem" : "github",
 			return "default";
 		}
 	},
+	store = new storeDataJS("Tools-Hub-settings", {}),
 	copy = function(data, alertFlag = true) {
 		data = $(`<textarea style="height:0;width:0"></textarea>`).val(typeof data === "string" ? data : String(data));
 		$("body").append(data)
@@ -118,6 +119,10 @@ var host = location.hostname.search("rth.app") !== -1 ? "gem" : "github",
 	matchTheme = function(query) {
 		query.matches ? $("html").attr("dark", "true") : $("html").removeAttr("dark")
 	},
+	matchContainer = function() {
+		$("#controller").width($("#app")[0].offsetWidth - 2);
+		$("#controller").height($("#app")[0].offsetHeight - 2);
+	},
 	show = function(e) {
 		e = e instanceof jQuery ? e : $(e);
 		e.removeAttr("hidden");
@@ -151,7 +156,7 @@ var host = location.hostname.search("rth.app") !== -1 ? "gem" : "github",
 				}
 			}
 		} catch (e) {
-			console.log("iframeLoad 参数错误", e);
+			console.error("iframeLoad 参数错误", e);
 		}
 		show("#app .state-msg");
 		hide("#app iframe[name=app-if]");
@@ -168,6 +173,8 @@ var host = location.hostname.search("rth.app") !== -1 ? "gem" : "github",
 			return false
 		}
 		$("#app iframe[name=app-if]").css("--size", rate === 100 ? "" : `${rate}%`);
+		store.set($(".nav a[select]").attr("site"), rate === 100 ? "" : `${rate}%`, true);
+		console.log(`当前页缩放值:${rate}%`);
 		if (rate < 100) {
 			$("#app iframe[name=app-if]").addClass("absolute-center");
 		} else {
@@ -183,13 +190,15 @@ var host = location.hostname.search("rth.app") !== -1 ? "gem" : "github",
 		}
 	}
 
-
 mediaQueryJSON.fn.init(mediaQueryJSON.theme, match.theme);
 $("body").ready(() => {
 	//先加载iframe，其他稍后再说
 	$("#app iframe[name=app-if]")[0].onload = function() {
 		hide("#app .state-msg");
 		show("#app iframe[name=app-if]");
+		var rate = store.get($(".nav a[select]").attr("site"));
+		rate = typeof rate === "string" && rate.trim() ? rate : 100;
+		iframeScale(rate);
 	}
 	iframeLoad(map[host][$(".nav a[select]").attr("site")], {
 		"jump": "parent"
@@ -216,12 +225,10 @@ $("body").ready(() => {
 					}
 				})
 			} else if ($(`#controller`).attr("hidden") === undefined) {
-				hide(`#controller`).removeAttr("url-data");
+				hide(`#controller`).data("url", "");
 			} else {
-				$("#controller").width($("#app")[0].offsetWidth - 2);
-				$("#controller").height($("#app")[0].offsetHeight - 2);
-				show(`#controller`).attr("url-data", $("#app iframe[name=app-if]")
-					.attr("src"));
+				matchContainer();
+				show(`#controller`).data("url", $("#app iframe[name=app-if]").attr("src"));
 			}
 		}
 	})
@@ -258,10 +265,48 @@ $("body").ready(() => {
 				iframeScale(100);
 				break;
 			default:
-				console.log("iframe-controller error");
+				console.error("iframe-controller error");
 				break;
 		}
 		needHide && hide("#controller");
+	})
+	//底部手势
+	$("#touch").touch({
+		left() {
+			if ($("#touch").data("locked")) {
+				return false
+			}
+			$("#touch").attr("touchJS-disabled", "");
+			$(".nav a")[($(".nav a[select]").index() + 7) % 8].click();
+			setTimeout(() => {
+				$("#touch").removeAttr("touchJS-disabled");
+			}, 1000)
+		},
+		right() {
+			if ($("#touch").data("locked")) {
+				return false
+			}
+			$("#touch").attr("touchJS-disabled", "");
+			$(".nav a")[($(".nav a[select]").index() + 1) % 8].click();
+			setTimeout(() => {
+				$("#touch").removeAttr("touchJS-disabled");
+			}, 1000)
+		},
+		tap() {
+			if ($("#touch").data("locked")) {
+				return false
+			}
+			$(".nav a[select]").click();
+		},
+		dbTap() {
+			alert(
+				`左滑:切换到上一个iframe页面\n右滑:切换到下一个iframe页面\n点击:打开当前iframe页面控制台\n双击:显示底部touch bar功能列表\n长按:锁定/解锁底部Touch Bar功能`
+				)
+		},
+		longPress() {
+			$("#touch").data("locked", $("#touch").data("locked") ? "" : "locaked");
+			alert(`底部Touch Bar功能已${$("#touch").data("locked")?"锁定":"解锁"}`);
+		}
 	})
 	//iframe传递信息
 	window.addEventListener('message', (e) => {
@@ -272,10 +317,7 @@ $("body").ready(() => {
 	}, false);
 	// 响应式布局nav controller
 	mediaQueryJSON.fn.init(mediaQueryJSON.width, match.logo);
-	$(window).resize(() => {
-		$("#controller").width($("#app")[0].offsetWidth - 2);
-		$("#controller").height($("#app")[0].offsetHeight - 2);
-	});
+	$(window).resize(matchContainer);
 	// eruda配置
 	var erudaSrc = '';
 	if (/eruda=true/.test(window.location) || localStorage.getItem('active-eruda') === 'true') {
@@ -288,40 +330,4 @@ $("body").ready(() => {
 			})
 		})
 	}
-})
-$("#touch").ready(() => {
-	var touchTimer = -1,
-		active = true;
-	function centerScroll() {
-		active = false;
-		let l = $("#touch .touch_inner").width() - $("#touch").width();
-		$("#touch").scrollLeft(l / 2);
-		setTimeout(() => { //延时防抖，防止scroll初始化时候触发scroll事件
-			active = true;
-		}, 500)
-	}
-	centerScroll();
-	$("#touch").scroll((e) => {
-		if (!active) {
-			return null
-		}
-		let pos = $("#touch").scrollLeft();
-		touchTimer !== -1 && clearTimeout(touchTimer);
-		touchTimer = setTimeout(() => {
-			let l = $("#touch .touch_inner").width() - $("#touch").width();
-			let next=null;
-			if (pos > l/2) {
-				next=($(".nav a[select]").index()+1)%8;
-			} else if (pos < l/2) {
-				next=($(".nav a[select]").index()+7)%8;
-			}
-			if(next!==null){
-				$(".nav a")[next].click();
-			}
-			centerScroll();
-		}, 300)
-	})
-	$("#touch").dblclick(()=>{
-		centerScroll();
-	})
 })

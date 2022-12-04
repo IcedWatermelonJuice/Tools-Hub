@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+		<title>README.md</title>
+		<link rel="stylesheet" href="github-markdown.css" type="text/css">
+		<script src="marked.js"></script>
+		<script>
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "../README.md");
+			xhr.onload = function(e) {
+				if (this.status == 200 || this.status == 304) {
+					document.body.innerHTML = marked.parse(this.responseText);
+					document.querySelectorAll("a").forEach((e) => {
+						e.target = "_top";
+					})
+				}
+			}
+			xhr.send();
+		</script>
+	</head>
+	<body class="markdown-body">
+	</body>
+</html>
