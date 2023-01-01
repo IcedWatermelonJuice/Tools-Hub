@@ -1,12 +1,22 @@
 // ==UserScript==
 // @name         jQuery-Extensions-touchJS
 // @namespace    http://tampermonkey.net/
-// @version      1.6
+// @version      1.7
 // @description  jQuery-Extensions-touchJS是一个非常简单的jQuery touch扩展，用于适配移动端的常用touch操作（点击tab、双击dbTab、长按longPress、长按终止longPressCancel、滑动swipe以及具体滑动方向left right up down），并兼容鼠标手势操作
 // @author       tutu辣么可爱(greasyfork)/IcedWatermelonJuice(github)
 // @grant        none
 // ==/UserScript==
 (function() {
+	const fnKeyArray = ["swipe", "left", "right", "up", "down", "tap", "dbTap", "longPress","longPressCancel"]; //可用的事件名
+	const aboutTouchJS = {
+		"name": "jQuery-Extensions-touchJS",
+		"version": "1.7",
+		"description": "jQuery-Extensions-touchJS是一个非常简单的jQuery touch扩展，用于适配移动端的常用touch操作（点击tab、双击dbTab、长按longPress、长按终止longPressCancel、滑动swipe以及具体滑动方向left right up down），并兼容鼠标手势操作",
+		"author": "tutu辣么可爱(greasyfork)/IcedWatermelonJuice(github)",
+		"url": "https://greasyfork.org/zh-CN/scripts/454450",
+		"event":fnKeyArray.toString()
+	};
+	
 	if (typeof $ !== "function" && typeof jQuery !== "function") {
 		console.error("jQuery-Extensions-touchJS 缺少jQuery依赖")
 		return false;
@@ -17,22 +27,21 @@
 	}
 
 	function getFnName(fn) {
+		let name = ""
 		if (fn.name) {
-			return fn.name
+			name = fn.name
 		} else {
-			var fnstr = fn.toString().match(/function\s*([^(]*)\(/);
-			return fnstr ? fnstr[1] : null
+			name = fn.toString().match(/function\s*([^(]*)\(/);
+			name = name ? name[1] : null
 		}
+		return fnKeyArray.indexOf(name) < 0 ? name : null
 	}
 	$.fn.touch = function(evt, fn, fnName = null) {
 		// 预处理
 		var $that = $(this),
 			that = $that[0];
 		that.libForTouchJsExt = that.libForTouchJsExt ? that.libForTouchJsExt : {};
-		var fnMap = jsonExtend({}, that.libForTouchJsExt),
-			fnKeyArray = ["swipe", "left", "right", "up", "down", "tap", "dbTap", "longPress",
-				"longPressCancel"
-			]; //可用的事件名
+		var fnMap = jsonExtend({}, that.libForTouchJsExt);
 
 		function addFn(e, f, n) {
 			if (fnKeyArray.indexOf(e) < 0) {
@@ -43,7 +52,7 @@
 			fnMap[e] = fnMap[e] ? fnMap[e] : {};
 			if (!n) { //无方法名，获取并使用默认数字id
 				defAry = Object.keys(fnMap[e]).filter((v) => {
-					/^\d{1,}$/.test(v)
+					return /^\d{1,}$/.test(v)
 				});
 				//获取可用数字id
 				if (!fnMap[e][defAry.length]) { //假设id连续，长度就是新id
@@ -103,7 +112,7 @@
 				touch_flag = false,
 				lp_flag = false,
 				swipe_flag = false,
-				mouseDown_flag=false,
+				mouseDown_flag = false,
 				tap_sum = 0,
 				pos = {
 					x: 0,
@@ -133,19 +142,19 @@
 				te(e);
 			}, false);
 			that.addEventListener('mousedown', (e) => {
-				mouseDown_flag=true;
+				mouseDown_flag = true;
 				e = e || window.event;
 				!touch_flag && ts(e);
 			}, false);
 			that.addEventListener('mousemove', (e) => {
-				if(!mouseDown_flag){
+				if (!mouseDown_flag) {
 					return false
 				}
 				e = e || window.event;
 				!touch_flag && tm(e);
 			}, false);
 			that.addEventListener('mouseup', (e) => {
-				mouseDown_flag=false;
+				mouseDown_flag = false;
 				e = e || window.event;
 				!touch_flag && te(e);
 			}, false);
@@ -248,5 +257,8 @@
 			}
 		}
 		return $that
+	}
+	$.fn.aboutTouch = function(query) {
+		return aboutTouchJS[query] ? aboutTouchJS[query] : aboutTouchJS
 	}
 })(jQuery);
