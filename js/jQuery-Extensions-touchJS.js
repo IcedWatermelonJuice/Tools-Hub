@@ -1,16 +1,16 @@
 // ==UserScript==
 // @name         jQuery-Extensions-touchJS
 // @namespace    http://tampermonkey.net/
-// @version      1.7
+// @version      1.8
 // @description  jQuery-Extensions-touchJS是一个非常简单的jQuery touch扩展，用于适配移动端的常用touch操作（点击tab、双击dbTab、长按longPress、长按终止longPressCancel、滑动swipe以及具体滑动方向left right up down），并兼容鼠标手势操作
 // @author       tutu辣么可爱(greasyfork)/IcedWatermelonJuice(github)
 // @grant        none
 // ==/UserScript==
 (function() {
-	const fnKeyArray = ["swipe", "left", "right", "up", "down", "tap", "dbTap", "longPress","longPressCancel"]; //可用的事件名
+	const fnKeyArray = ["start","end","swipe", "left", "right", "up", "down", "tap", "dbTap", "longPress","longPressCancel"]; //可用的事件名
 	const aboutTouchJS = {
 		"name": "jQuery-Extensions-touchJS",
-		"version": "1.7",
+		"version": "1.8",
 		"description": "jQuery-Extensions-touchJS是一个非常简单的jQuery touch扩展，用于适配移动端的常用touch操作（点击tab、双击dbTab、长按longPress、长按终止longPressCancel、滑动swipe以及具体滑动方向left right up down），并兼容鼠标手势操作",
 		"author": "tutu辣么可爱(greasyfork)/IcedWatermelonJuice(github)",
 		"url": "https://greasyfork.org/zh-CN/scripts/454450",
@@ -87,14 +87,23 @@
 		//添加事件
 		if (!that.libForTouchJsExt.eventLoaded) {
 			that.libForTouchJsExt.eventLoaded = true;
+			var checkFnExist=function(evt){ // 检查是否存在该事件
+				return that.libForTouchJsExt.hasOwnProperty(evt) && typeof that.libForTouchJsExt[evt][0]==="function";
+			}
 			var execFn = function(evt, params = {}) { //执行方法
-				if (!evt || that.hasAttribute("touchJS-disabled")) {
+				if (!evt) {
 					return false
 				}
 				if (/left|right|up|down/.test(evt)) {
 					evt = [evt, "swipe"];
 				} else {
 					evt = [evt];
+				}
+				var banReg=new RegExp("all|\\*|"+evt.join("|"),"i");
+				for(let i=0;i<evt.length;i++){
+					if(that.getAttribute("touchJS-disabled")===""||banReg.test(that.getAttribute("touchJS-disabled"))){
+						return false
+					}
 				}
 				params.target = that;
 				evt.forEach((e) => {
@@ -188,12 +197,15 @@
 				lp_timer = setTimeout(function() {
 					if (!swipe_flag) {
 						lp_timer = -1;
-						lp_flag = true;
-						execFn("longPress", {
+						lp_flag = checkFnExist("longPress");
+						lp_flag && execFn("longPress", {
 							0: pos
 						});
 					}
 				}, 600)
+				execFn("start", {
+					0: pos
+				});
 			}
 
 			function tm(e) { //touchmove
@@ -202,10 +214,10 @@
 					y: e.clientY || e.changedTouches[0].clientY
 				}
 				if (!lp_flag && (Math.abs(pos.x - temp.x) > 10 || Math.abs(pos.y - temp.y) > 10)) {
-					swipe_flag = true;
+					swipe_flag = checkFnExist("swipe") || checkFnExist("left") || checkFnExist("right") || checkFnExist("up") || checkFnExist("down");
 					lp_timer !== -1 && clearTimeout(lp_timer);
 					lp_timer = -1;
-					execFn(dir(pos, temp), {
+					swipe_flag && execFn(dir(pos, temp), {
 						0: pos,
 						1: temp
 					});
@@ -238,6 +250,9 @@
 						}, 200)
 					}
 				}
+				execFn("end", {
+					0: pos
+				});
 			}
 		}
 		return $that
